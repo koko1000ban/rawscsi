@@ -95,10 +95,18 @@ describe Rawscsi::Query::Compound do
 
   it "constructs a combination of conjunction and prefix query" do
     arg = {:q => {:and => [{:genres => "Action"},
-                           {:prefix => {:actor => "Stallone"}}]}} 
+                           {:prefix => {:actor => "Stallone"}}]}}
     str = Rawscsi::Query::Compound.new(arg).build
 
     expect(str).to eq("q=(and%20genres:%27Action%27(prefix%20field=actor%20%27Stallone%27))&q.parser=structured")
+  end
+
+  it "constructs a combination of conjunction and term query" do
+    arg = {:q => {:and => [{:genres => "Action"},
+                           {:term => {:actor => "Stallone"}}]}}
+    str = Rawscsi::Query::Compound.new(arg).build
+
+    expect(str).to eq("q=(and%20genres:%27Action%27(term%20field=actor%20%27Stallone%27))&q.parser=structured")
   end
 end
 

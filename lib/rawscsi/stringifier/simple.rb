@@ -23,6 +23,8 @@ module Rawscsi
           "(not" + encode(" #{stringify(not_hash)}") + ")"
         elsif pre_hash = value[:prefix]
           "(prefix" + encode(" #{stringify(pre_hash, true)}") + ")"
+        elsif term_hash = value[:term]
+          "(term" + encode(" #{stringify(term_hash, true)}") + ")"
         elsif range = value[:range]
           range
         else
