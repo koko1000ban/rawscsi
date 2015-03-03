@@ -9,7 +9,7 @@ describe Rawscsi::Query::Compound do
   end
 
   it "constructs a query that looks only at a single field and specifies fields" do
-    arg = {:q => {:and => [{:title => "star wars"}]}, :fields => [:title, :genres]}    
+    arg = {:q => {:and => [{:title => "star wars"}]}, :fields => [:title, :genres]}
     str = Rawscsi::Query::Compound.new(arg).build
     expect(str).to eq("q=(and%20title:%27star%20wars%27)&return=title,genres&q.parser=structured")
   end
@@ -98,7 +98,7 @@ describe Rawscsi::Query::Compound do
                            {:prefix => {:actor => "Stallone"}}]}}
     str = Rawscsi::Query::Compound.new(arg).build
 
-    expect(str).to eq("q=(and%20genres:%27Action%27(prefix%20field=actor%20%27Stallone%27))&q.parser=structured")
+    expect(str).to eq("q=(and%20genres:%27Action%27(prefix%20field%3Dactor%20%27Stallone%27))&q.parser=structured")
   end
 
   it "constructs a combination of conjunction and term query" do
@@ -106,7 +106,7 @@ describe Rawscsi::Query::Compound do
                            {:term => {:actor => "Stallone"}}]}}
     str = Rawscsi::Query::Compound.new(arg).build
 
-    expect(str).to eq("q=(and%20genres:%27Action%27(term%20field=actor%20%27Stallone%27))&q.parser=structured")
+    expect(str).to eq("q=(and%20genres:%27Action%27(term%20field%3Dactor%20%27Stallone%27))&q.parser=structured")
   end
 end
 
