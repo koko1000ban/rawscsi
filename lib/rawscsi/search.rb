@@ -2,6 +2,9 @@ require "httparty"
 
 module Rawscsi
   class Search < Base
+
+    class Error < StandardError; end
+
     def search(arg, options = {})
       if arg.is_a?(String)
         query = Rawscsi::Query::Simple.new(arg).build
