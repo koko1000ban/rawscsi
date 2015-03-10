@@ -10,7 +10,14 @@ module Rawscsi
         query = Rawscsi::Query::Simple.new(arg).build
         raw = options[:raw]
       elsif arg.is_a?(Hash)
-        query = Rawscsi::Query::Compound.new(arg).build
+        parser = arg.delete(:parser) || :structured
+        case parser
+        when :structured
+          query = Rawscsi::Query::Compound.new(arg).build
+        when :lucene
+          query = Rawscsi::Query::Lucene.new(arg).build
+        end
+
         raw = arg[:raw]
       else
         raise "Unknown argument type"

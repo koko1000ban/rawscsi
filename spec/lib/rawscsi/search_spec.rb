@@ -22,9 +22,9 @@ describe Rawscsi::Search do
     expect(@search_helper.config.api_version).to  eq('2013-01-01')
     expect(@search_helper.is_active_record).to be nil
   end
-  
+
   it "has active_record option" do
-    ar_search_helper = Rawscsi::Search.new("imdb-test", :active_record => true)  
+    ar_search_helper = Rawscsi::Search.new("imdb-test", :active_record => true)
     expect(ar_search_helper.is_active_record).to be true
   end
 
@@ -45,10 +45,18 @@ describe Rawscsi::Search do
       expect(results).to be_a Rawscsi::SearchHelpers::ResultsHash
     end
   end
-  
+
   it "performs a search with specified return fields" do
     VCR.use_cassette("search_spec/fields") do
       results = @search_helper.search(:q => {:and => [{:title => "Die Hard"}]}, :fields => [:title, :genres])
+      expect(results).to include({"genres"=>["Action", "Thriller"], "title" => "Die Hard", "id"=>"tt0095016"})
+      expect(results).to include({"genres"=>["Action", "Thriller"], "title" => "Die Hard 2", "id"=>"tt0099423"})
+    end
+  end
+
+  it "performs a search with lucene parser" do
+    VCR.use_cassette("search_spec/fields") do
+      results = @search_helper.search(:q => "title:Die Hard", :fields => [:title, :genres], :parser => :lucene)
       expect(results).to include({"genres"=>["Action", "Thriller"], "title" => "Die Hard", "id"=>"tt0095016"})
       expect(results).to include({"genres"=>["Action", "Thriller"], "title" => "Die Hard 2", "id"=>"tt0099423"})
     end
@@ -64,7 +72,7 @@ describe Rawscsi::Search do
 
   it "performs conjunction search over the same field" do
   # Find all movies starring both Kevin Bacon and Tom Hanks
-    VCR.use_cassette("search_spec/and_same_field") do 
+    VCR.use_cassette("search_spec/and_same_field") do
       results = @search_helper.search(:q => {:and => [{:actors => "Kevin Bacon"}, {:actors => "Tom Hanks"}]},
                                       :fields => [:title])
 
@@ -85,7 +93,7 @@ describe Rawscsi::Search do
   end
 
   it "performs conjunction search with numeric range" do
-    # Find the Terminator movies rated higher than 8 
+    # Find the Terminator movies rated higher than 8
     VCR.use_cassette("search_spec/numeric_range") do
       results = @search_helper.search(:q => { :and => [{:actors => "Arnold"},
                                                  {:title => "Terminator"},
@@ -137,7 +145,7 @@ describe Rawscsi::Search do
   it "performs disjunction searches" do
     # Finds the top ten movies staring any one of these amazing actors
     VCR.use_cassette("search_spec/disjunction") do
-      results = @search_helper.search( 
+      results = @search_helper.search(
                   :q => {:or => [{:actors => "Dustin Hoffman"},
                            {:actors => "Gary Oldman"},
                            {:actors => "Daniel Day Lewis"},
@@ -157,7 +165,7 @@ describe Rawscsi::Search do
   it "performs a combination of conjunction and disjunction search" do
     # Find the top action movies by these action stars
     VCR.use_cassette("search_spec/and_or_combo") do
-      results = @search_helper.search( 
+      results = @search_helper.search(
                   :q => {:and => [{:genres => "Action"},
                             {:or => [{:actors => "Stallon"},
                                   {:actors => "Jackie"},
@@ -183,10 +191,10 @@ describe Rawscsi::Search do
       )
     end
   end
-  
+
   it "can handle no results gracefully" do
     VCR.use_cassette("search_spec/no_result") do
-      results = @search_helper.search("fasdfiojfd")   
+      results = @search_helper.search("fasdfiojfd")
       expect(results).to eq([])
     end
   end

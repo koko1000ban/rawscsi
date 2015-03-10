@@ -1,7 +1,8 @@
+require "cgi"
+
 module Rawscsi
   module Query
-    class Compound < Base
-
+    class Lucene < Base
       def initialize(query_hash)
         @query_hash = query_hash
       end
@@ -14,17 +15,15 @@ module Rawscsi
           start,
           limit,
           fields,
-          "q.parser=structured"
+          "q.parser=lucene"
         ].compact.join("&")
       end
 
       private
-
       def query
-        "q=" + Rawscsi::Query::Stringifier.new(query_hash[:q]).build
+        "q=#{CGI.escape(query_hash[:q])}"
       end
-
-   end
+    end
   end
 end
 

@@ -10,6 +10,8 @@ module Rawscsi
     autoload :Simple,      "rawscsi/query/simple"
     autoload :Compound,    "rawscsi/query/compound"
     autoload :Stringifier,  "rawscsi/query/stringifier"
+    autoload :Lucene, "rawscsi/query/lucene"
+    autoload :Base, "rawscsi/query/base"
   end
 
   module Stringifier
@@ -33,13 +35,13 @@ module Rawscsi
 
   class Configuration
     attr_accessor :domain_name,
-      :domain_id, 
+      :domain_id,
       :region,
       :api_version,
       :attributes,
       :batch_size
   end
-  
+
   def self.register(model)
     config = Configuration.new
     yield(config)
