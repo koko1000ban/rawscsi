@@ -2,8 +2,11 @@ require "httparty"
 
 module Rawscsi
   class Search < Base
+
+    class Error < StandardError; end
+
     def search(arg, options = {})
-      if arg.is_a?(String)  
+      if arg.is_a?(String)
         query = Rawscsi::Query::Simple.new(arg).build
         raw = options[:raw]
       elsif arg.is_a?(Hash)
@@ -14,6 +17,8 @@ module Rawscsi
       end
 
       response = send_request_to_aws(query)
+      raise Error, response.message if response.code == 400
+
       results = results_container(response)
 
       if raw

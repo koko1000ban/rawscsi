@@ -18,11 +18,18 @@ module Rawscsi
       end
 
       private
+
+      def encode_with_field(s)
+        encode(s).gsub('=', '%3D')
+      end
+
       def build_from_hash
         if not_hash = value[:not]
           "(not" + encode(" #{stringify(not_hash)}") + ")"
         elsif pre_hash = value[:prefix]
-          "(prefix" + encode(" #{stringify(pre_hash, true)}") + ")"
+          "(prefix" + encode_with_field(" #{stringify(pre_hash, true)}") + ")"
+        elsif term_hash = value[:term]
+          "(term" + encode_with_field(" #{stringify(term_hash, true)}") + ")"
         elsif range = value[:range]
           range
         else
@@ -42,7 +49,7 @@ module Rawscsi
         output_str
       end
 
-      def kv_stringify(k, v, prefix=false) 
+      def kv_stringify(k, v, prefix=false)
         if prefix
           "field=#{k} '#{v}'"
         else
